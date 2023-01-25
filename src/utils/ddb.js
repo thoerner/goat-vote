@@ -160,10 +160,11 @@ export const newProposalTable = async (id, proposal, options) => {
 }
 
 export const vote = async (id, address, option, votes) => {
+    
     const params = {
         TableName: `proposal-${id}`,
         Item: {
-            'address': { S: address },
+            'address': { S: address.toLowerCase() },
             'option': { S: option },
             'votes': { N: votes }
         }

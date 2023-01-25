@@ -156,6 +156,12 @@ const Proposal = props => {
             return <div></div>
         }
 
+        let sortedVotes = [...allVotes]
+
+        // sort by number of votes
+        sortedVotes.sort((a, b) => b.votes - a.votes)
+
+
         return (
             <div style={styles.centered}>
                 <table style={styles.table}>
@@ -167,7 +173,7 @@ const Proposal = props => {
                         </tr>
                     </thead>
                     <tbody>
-                        {allVotes.map((vote, i) => (
+                        {sortedVotes.map((vote, i) => (
                             <tr key={i}>
                                 <td style={styles.td}>{vote.address}</td>
                                 <td style={styles.td}>{vote.option}</td>
