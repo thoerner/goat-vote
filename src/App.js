@@ -46,7 +46,7 @@ const App = () => {
 
   useEffect(() => { 
     getVotes()
-  }, [balance])
+  }, [balance, getVotes])
 
   const routes = <Routes>
                   <Route path='/' element={<Main {...walletProps} />} />

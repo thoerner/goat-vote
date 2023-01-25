@@ -7,4 +7,4 @@ export const STATUS_NO_MASK = <p>
     You must use Metamask or a Web3 browser to connect.
   </a>
 </p>
-export const METAMASK_REDIRECT_URL = 'https://metamask.app.link/dapp/https://voat.goatgauds.com';
+export const METAMASK_REDIRECT_URL = 'https://metamask.app.link/dapp/https://vote.goatgauds.com';
