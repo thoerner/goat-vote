@@ -125,10 +125,7 @@ const Proposal = props => {
             tallyText[option] = `${tally[option]} (${(tally[option] / totalVotes * 100).toFixed(2)}%)`
         })
 
-
         const sorted = Object.keys(tally).sort((a, b) => tally[b] - tally[a])
-
-        console.log(sorted[0])        
 
         return (
             <div style={styles.centered}>

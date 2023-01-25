@@ -65,7 +65,7 @@ const App = () => {
           
         </div>
         <div id="content">
-          <img src={logo} className="App-logo" alt="logo" />
+          <a href="/"><img src={logo} className="App-logo" alt="logo" /></a>
           <Router>
             {routes}
           </Router>
