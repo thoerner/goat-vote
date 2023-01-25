@@ -1,18 +1,52 @@
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { Link } from 'react-router-dom'
+import { getAllProposals } from '../utils/ddb'
 
-const calculateVotes = (goatBalance, stakedGoatBalance) => {
-    // implement quadratic voting
+const ViewProposals = () => {
+    const [proposals, setProposals] = useState([])
+    const [loading, setLoading] = useState(false)
 
-    let curve = 1
-    let goatVotes = 0
-    for (let i = 1; i <= goatBalance; i++) {
-        goatVotes += 1/i**curve
-    }
-    let stakedGoatVotes = 0
-    for (let i = 1; i <= stakedGoatBalance; i++) {
-        stakedGoatVotes += (1/i**curve) * 1.1
-    }
-    return (goatVotes + stakedGoatVotes).toFixed(2)
+    useEffect(() => {
+        const handleGetProposals = async () => {
+            setLoading(true)
+            const data = await getAllProposals()
+            setProposals(data)
+            setLoading(false)
+        }
+        handleGetProposals()
+    }, [])
+
+    
+
+    return (
+        <div>
+            {loading && <p>Loading...</p>}
+            {!loading && <div style={styles.proposalsContainer}>{proposals.map((proposal, i) => (
+                <div style={styles.proposal} key={i}>
+                    <div style={styles.proposalItem}>
+                        <p><strong>Proposal:</strong>
+                            <br/><br/>
+                            {proposal['proposal']}
+                        </p>
+                    </div>
+                    <div style={styles.proposalItem}>
+                        <strong>Options:</strong>
+                        <ul>
+                            {proposal['options'].map((option, i) => (
+                                <li key={i}>{option}</li>
+                            ))}
+                        </ul>
+                    </div>
+                    <Link to={`/proposal/${proposal['proposal-id']}`}>Go To Proposal</Link>
+                    <br />
+                    <br />
+                </div>
+            ))}</div>}
+        </div>
+    )
 }
+
 
 const Main = props => {
     const goatBalance = props.balance.goatBalance
@@ -24,13 +58,45 @@ const Main = props => {
             <p>Goats: {goatBalance}</p>
             <p>Staked Goats: {stakedGoatBalance}</p>
             <p>Voting Power:{" "} 
-                {calculateVotes(goatBalance, stakedGoatBalance)}
+                {props.votes}
             </p>
-            <button>Yay</button>
-            {" "}
-            <button>Nay</button>
+            <ViewProposals />
         </div>
     )
+}
+
+const styles = {
+    centered: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    proposal: {
+        border: "1px solid black",
+        padding: "10px",
+        margin: "10px",
+        borderRadius: "5px",
+        maxWidth: "500px",
+        backgroundColor: "gray",
+        color: "black"
+    },
+    proposalsContainer: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+    },
+    proposalItem: {
+        border: "1px solid black",
+        padding: "10px",
+        margin: "10px",
+        borderRadius: "5px",
+        textAlign: "left",
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+        color: "white",
+        backgroundColor: "black"
+    }
 }
 
 export default Main
