@@ -7,17 +7,16 @@ const ViewProposals = () => {
     const [proposals, setProposals] = useState([])
     const [loading, setLoading] = useState(false)
 
+    const handleGetProposals = async () => {
+        setLoading(true)
+        const data = await getAllProposals()
+        setProposals(data)
+        setLoading(false)
+    }
+
     useEffect(() => {
-        const handleGetProposals = async () => {
-            setLoading(true)
-            const data = await getAllProposals()
-            setProposals(data)
-            setLoading(false)
-        }
         handleGetProposals()
     }, [])
-
-    
 
     return (
         <div>
@@ -60,7 +59,9 @@ const Main = props => {
             <p>Voting Power:{" "} 
                 {props.votes}
             </p>
-            <ViewProposals />
+            {props.walletAddress !== "" &&
+                <ViewProposals />
+            }
         </div>
     )
 }
