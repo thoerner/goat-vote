@@ -37,45 +37,56 @@ const Proposal = props => {
     const [chosenVote, setVote] = useState('')
     const [allVotes, setAllVotes] = useState([])
     const [submitted, setSubmitted] = useState(false)
+    const [proposalId, setProposalId] = useState("")
 
     useEffect(() => {
         const getData = async () => {
-            const item = await getProposalById(id)
+            if (proposalId === "") {
+                return
+            }
+            const item = await getProposalById(proposalId)
             setProposal(item)
-            const votes = await getAllVotes(id)
+            const votes = await getAllVotes(proposalId)
             setAllVotes(votes)
         }
         getData()
-    }, [])
+    }, [proposalId])
+
+    useEffect(() => {
+        setProposalId(id)
+    }, [id])
 
     useEffect(() => {
         const getVote = async () => {
-            if (props.walletAddress == "") {
+            if (props.walletAddress === "" || proposalId === "") {
                 return
             }
-            const vote = await getVoteByAddress(id, props.walletAddress)
+            const vote = await getVoteByAddress(proposalId, props.walletAddress)
             setVote(vote)
         }
         getVote()
-    }, [chosenOption, proposal])
+    }, [chosenOption, proposal, props.walletAddress, proposalId])
 
     useEffect(() => {
         const getData = async () => {
-            const votes = await getAllVotes(id)
+            if (proposalId === "") {
+                return
+            }
+            const votes = await getAllVotes(proposalId)
             setAllVotes(votes)
         }
         if (submitted) {
             setSubmitted(false)
             getData()
         }
-    }, [submitted, allVotes])
+    }, [submitted, allVotes, proposalId])
 
     const handleSubmit = async () => {
-        if (proposal.active == "false") {
+        if (proposal.active === "false") {
             toast.error('This vote is not active!')
             return
         }
-        if (props.votes == 0) {
+        if (!props.votes) {
             toast.error('You have no votes!')
             return
         }
@@ -177,7 +188,7 @@ const Proposal = props => {
                 options={proposal.options} 
                 setChosenOption={setChosenOption} 
             />
-            <button onClick={handleSubmit}>Vote!</button>
+            <button onClick={handleSubmit}>{proposal.active === "true" ? "Vote!" : "Vote is not active"}</button>
             <br />
             <br />
             <div style={styles.smallCard}>

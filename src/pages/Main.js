@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { getAllProposals } from '../utils/ddb'
 
