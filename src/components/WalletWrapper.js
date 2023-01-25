@@ -14,9 +14,7 @@ import {
  * @notice This component will wrap the entire app and will provide the app with the user's wallet address and status.
  */ 
 
-export const WalletWrapper = props => {
-
-  
+export const WalletWrapper = ({ setWallet, setStatus, setChainId, setBalance, children }) => {
 
   /** 
    * @dev This function will run when the component is first loaded.
@@ -30,37 +28,37 @@ export const WalletWrapper = props => {
       if (window.ethereum) {
         window.ethereum.on("accountsChanged", (accounts) => {
           if (accounts.length > 0) {
-            props.setWallet(accounts[0])
-            props.setStatus(STATUS_READY)
+            setWallet(accounts[0])
+            setStatus(STATUS_READY)
             getData()
           } else {
-            props.setWallet("")
-            props.setStatus(STATUS_NOT_READY)
+            setWallet("")
+            setStatus(STATUS_NOT_READY)
           }
         })
         window.ethereum.on("chainChanged", (_chainId) => {
-          props.setChainId(_chainId)
+          setChainId(_chainId)
         })
       } else {
-        props.setStatus(STATUS_NO_MASK)
+        setStatus(STATUS_NO_MASK)
       }
     }
     const getData = async () => {
       const { address, status, chainId } = await getCurrentWalletConnected()
-      props.setWallet(address)
-      props.setStatus(status)
-      props.setChainId(chainId)
+      setWallet(address)
+      setStatus(status)
+      setChainId(chainId)
       if (address) {
-        props.setBalance(await getBalance(address))
+        setBalance(await getBalance(address))
       }
       addWalletListener()
     }
     getData()
-  }, [])
+  }, [setBalance, setChainId, setWallet, setStatus])
 
   return (
     <div>
-      {props.children}
+      {children}
     </div>
   )
 }

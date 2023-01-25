@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { getProposalById, vote, getVoteByAddress, getAllVotes } from '../utils/ddb'
 import toast from 'react-hot-toast'
 
-const SelectableOptions = ({ options, setChosenOption }) => {    
+const SelectableOptions = ({ options, setChosenOption, chosenVote }) => {    
     const handleOptionChange = (e, i) => {
         setChosenOption(i)
     }
@@ -17,7 +17,7 @@ const SelectableOptions = ({ options, setChosenOption }) => {
             {options.map((option, i) => (
                 <div key={i}>
                     <label>
-                        {options[i]}
+                        {chosenVote === options[i] ? <span>✅{" " + options[i]}</span> : options[i]}
                         <input type="radio" name="option" value={option} onChange={(e) => handleOptionChange(e, i)} />
                     </label>
                     <br/>
@@ -27,8 +27,6 @@ const SelectableOptions = ({ options, setChosenOption }) => {
         </div>
     )
 }
-
-
 
 const Proposal = props => {
     const { id } = useParams()
@@ -125,7 +123,6 @@ const Proposal = props => {
             tally[option] = `${tally[option]} (${(tally[option] / totalVotes * 100).toFixed(2)}%)`
         })
 
-
         return (
             <div style={styles.centered}>
                 <table style={styles.table}>
@@ -186,16 +183,12 @@ const Proposal = props => {
             <h1>{proposal.proposal}</h1>
             <SelectableOptions 
                 options={proposal.options} 
-                setChosenOption={setChosenOption} 
+                setChosenOption={setChosenOption}
+                chosenVote={chosenVote}
             />
-            <button onClick={handleSubmit}>{proposal.active === "true" ? "Vote!" : "Vote is not active"}</button>
+            <button onClick={handleSubmit}>{proposal.active === "true" ? "Vote (Voat?)" : "🚫 Voting Inactive"}</button>
             <br />
             <br />
-            <div style={styles.smallCard}>
-                <p><strong>You voted for:</strong><br/>
-                    {chosenVote}
-                </p>
-            </div>
             <h2><u>Results</u></h2>
             {tallyVotes()}
             {tableOfVotes()}
