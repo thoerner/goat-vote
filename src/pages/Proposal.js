@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { getProposalById, vote, getVoteByAddress, getAllVotes } from '../utils/ddb'
+import { getEnsName } from '../utils/interact'
 import toast from 'react-hot-toast'
 
 const SelectableOptions = ({ options, setChosenOption, chosenVote }) => {    
@@ -36,6 +37,7 @@ const Proposal = props => {
     const [allVotes, setAllVotes] = useState([])
     const [submitted, setSubmitted] = useState(false)
     const [proposalId, setProposalId] = useState("")
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const getData = async () => {
@@ -46,6 +48,7 @@ const Proposal = props => {
             setProposal(item)
             const votes = await getAllVotes(proposalId)
             setAllVotes(votes)
+            setLoading(false)
         }
         getData()
     }, [proposalId])
@@ -103,7 +106,7 @@ const Proposal = props => {
         }
     }
 
-    const tallyVotes = () => {
+    const VoteTally = () => {
         const tally = {}
         allVotes.forEach(vote => {
             if (!tally[vote.option]) {
@@ -150,7 +153,7 @@ const Proposal = props => {
     }
 
     // return a full table of votes, by address
-    const tableOfVotes = () => {
+    const TableOfVotes = () => {
         
         if (allVotes.length === 0) {
             return <div></div>
@@ -175,9 +178,9 @@ const Proposal = props => {
                     <tbody>
                         {sortedVotes.map((vote, i) => (
                             <tr key={i}>
-                                <td style={styles.td}>{vote.address}</td>
-                                <td style={styles.td}>{vote.option}</td>
-                                <td style={styles.td}>{vote.votes}</td>
+                                <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{vote.address}</a></td>
+                                <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}>{vote.option}</td>
+                                <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}>{vote.votes}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -190,19 +193,22 @@ const Proposal = props => {
 
     return (
         <div>
+            {loading ? <div>Loading...</div> : <div>
             <h1>{proposal.proposal}</h1>
             <SelectableOptions 
                 options={proposal.options} 
                 setChosenOption={setChosenOption}
                 chosenVote={chosenVote}
             />
-            <button onClick={handleSubmit}>{proposal.active === "true" ? "Vote (Voat?)" : "🚫 Voting Inactive"}</button>
+            <button onClick={handleSubmit}>
+                {proposal.active === "true" ? "Vote (Voat?)" : "🚫 Voting Inactive"}
+            </button>
             <br />
             <br />
             <h2><u>Results</u></h2>
-            {tallyVotes()}
-            {tableOfVotes()}
-
+            <VoteTally />
+            <TableOfVotes />
+            </div>}
         </div>
     )
 }
@@ -220,11 +226,22 @@ const styles = {
     },
     th: {
         border: '1px solid black',
-        padding: '10px'
+        padding: '10px',
+        backgroundColor: 'lightgrey',
+        opacity: '0.6',
+        color: 'black'
     },
     td: {
         border: '1px solid black',
-        padding: '10px'
+        padding: '10px',
+        backgroundColor: 'white',
+        color: 'black',
+        opacity: '0.8'
+    },
+    tdx: {
+        border: '1px solid black',
+        padding: '10px',
+        backgroundColor: 'green'
     }
 }
 
