@@ -86,7 +86,7 @@ const Proposal = props => {
             toast.error('This vote is not active!')
             return
         }
-        if (!props.votes) {
+        if (Number(props.votes) === 0) {
             toast.error('You have no votes!')
             return
         }
