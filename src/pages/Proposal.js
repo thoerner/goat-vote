@@ -81,25 +81,25 @@ const Proposal = props => {
 
     const handleSubmit = async () => {
         if (proposal.active === "false") {
-            toast.error('This vote is not active!')
+            toast.error(`It's not time to vote!`)
             return
         }
         if (Number(props.votes) === 0) {
-            toast.error('You have no votes!')
+            toast.error('You have no power!')
             return
         }
         if (chosenOption === -1) {
-            console.log("Error")
+            toast.error('You must choose an option!')
             return
         }
-        const { success } = await vote(id, props.walletAddress, proposal.options[chosenOption], props.votes)
+        const { success, error } = await vote(id, props.walletAddress, proposal.options[chosenOption], props.votes)
         if (success) {
             toast.success('Vote submitted!')
             setVote(proposal.options[chosenOption])
             setSubmitted(true)
         } else {
-            console.log("Error")
-            toast.error('Vote failed!')
+            toast.error('Vote failed:', error)
+            console.log(error)
         }
     }
 
@@ -118,10 +118,17 @@ const Proposal = props => {
             totalVotes += tally[option]
         })
 
+        const tallyText = {...tally}
+
         // calculate percentages
         Object.keys(tally).forEach(option => {
-            tally[option] = `${tally[option]} (${(tally[option] / totalVotes * 100).toFixed(2)}%)`
+            tallyText[option] = `${tally[option]} (${(tally[option] / totalVotes * 100).toFixed(2)}%)`
         })
+
+
+        const sorted = Object.keys(tally).sort((a, b) => tally[b] - tally[a])
+
+        console.log(sorted[0])        
 
         return (
             <div style={styles.centered}>
@@ -136,7 +143,7 @@ const Proposal = props => {
                         {Object.keys(tally).map((option, i) => (
                             <tr key={i}>
                                 <td style={styles.td}>{option}</td>
-                                <td style={styles.td}>{tally[option]}</td>
+                                <td style={styles.td}>{tallyText[option]}{sorted[0] === option ? ' ✅' : null }</td>
                             </tr>
                         ))}
                     </tbody>
@@ -210,11 +217,11 @@ const styles = {
     },
     th: {
         border: '1px solid black',
-        padding: '5px'
+        padding: '10px'
     },
     td: {
         border: '1px solid black',
-        padding: '5px'
+        padding: '10px'
     }
 }
 

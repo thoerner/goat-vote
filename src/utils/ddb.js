@@ -100,12 +100,12 @@ export const removeProposalById = async (id) => {
         }
     }
 
-    const res = ddb.deleteItem(params, () => {})
+    const item = ddb.deleteItem(params, () => {})
 
-    if (res.error) {
+    if (item.response.error) {
         return {
             success: false,
-            error: res.error
+            error: item.response.error
         }
     }
 
@@ -113,17 +113,17 @@ export const removeProposalById = async (id) => {
         TableName: 'proposal-' + id,
     }
 
-    const res2 = ddb.deleteTable(params2, () => {})
+    const table = ddb.deleteTable(params2, () => {})
 
-    if (res2.error) {
+    if (table.response.error) {
         return {
             success: false,
-            error: res2.error
+            error: table.response.error
         }
     } else {
         return {
             success: true,
-            error: null
+            data: table.response.data
         }
     }
 }
@@ -144,17 +144,17 @@ export const newProposalTable = async (id, proposal, options) => {
         }
     }
 
-    const res = ddb.createTable(params, function(err, data) {})
+    const table = ddb.createTable(params, () => {})
 
-    if (res.error) {
+    if (table.response.error) {
         return {
             success: false,
-            error: res.error
+            error: table.response.error
         }
     } else {
         return {
             success: true,
-            data: res.data
+            data: table.response.data
         }
     }
 }
@@ -169,17 +169,17 @@ export const vote = async (id, address, option, votes) => {
         }
     }
 
-    const res = ddb.putItem(params, () => {})
+    const item = ddb.putItem(params, () => {})
 
-    if (res.error) {
+    if (item.response.error) {
         return {
             success: false,
-            error: res.error
+            error: item.response.error
         }
     } else {
         return {
             success: true,
-            data: res.data
+            data: item.response.data
         }
     }
 }
@@ -219,17 +219,17 @@ export const setVoteInactive = async (id) => {
         }
     }
 
-    const res = ddb.updateItem(params, () => {})
+    const item = ddb.updateItem(params, () => {})
 
-    if (res.error) {
+    if (item.response.error) {
         return {
             success: false,
-            error: res.error
+            error: item.response.error
         }
     } else {
         return {
             success: true,
-            data: res.data
+            data: item.response.data
         }
     }
 }
@@ -246,16 +246,16 @@ export const setVoteActive = async (id) => {
         }
     }
 
-    const res = ddb.updateItem(params, () => {})
-    if (res.error) {
+    const item = ddb.updateItem(params, () => {})
+    if (item.response.error) {
         return {
             success: false,
-            error: res.error
+            error: item.response.error
         }
     } else {
         return {
             success: true,
-            data: res.data
+            data: item.response.data
         }
     }
 }
