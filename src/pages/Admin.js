@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { addNewProposal, getAllProposals, removeProposalById } from '../utils/ddb'
+import { addNewProposal, getAllProposals, removeProposalById, setVoteActive, setVoteInactive } from '../utils/ddb'
 import toast from 'react-hot-toast'
 
 const SubmitButton = ({ proposal, options, setProposalId, proposalId, setProposal, setOptions }) => {
 
     const handleSubmit = async () => {
-        if (!proposal || !options) {
+        if (!proposal || !options[0]) {
+            toast("Please fill out all fields", { icon: "🚫" })
             console.log("Error")
             return
         }
@@ -51,37 +52,40 @@ const ProposalInput = () => {
         setOptions(newOptions)
     }
 
+    
+
     return (
-        <div>
-            <h3>Add a Proposal</h3>
-            <label>
-                Proposal:{" "}
-                <textarea value={proposal} rows="5" cols="50" onChange={handleProposalChange} />
-            </label>
-            <br />
-            <br />
-            {options.map((option, i) => (
-                <div key={i}>
-                    <label>
-                        Option {i+1}:{" "}
-                        <input type="text" value={option} onChange={(e) => handleOptionChange(e, i)} />
-                    </label>
-                    {" "}<button onClick={() => handleRemoveOptions(i)}>Remove</button>
-                    <br/>
-                    <br/>
-                </div>
-            ))}
-            <button onClick={() => setOptions([...options, ""])}>Add Option</button>
-            <br/>
-            <br/>
-            <SubmitButton
-                proposal={proposal}
-                options={options}
-                setProposalId={setProposalId}
-                proposalId={proposalId}
-                setProposal={setProposal}
-                setOptions={setOptions}
-            />
+        <div style={styles.proposalsContainer}>
+            <div style={styles.proposal}>
+                <h3>Add a Proposal</h3>
+                <label>
+                    <textarea value={proposal} rows="5" cols="50" onChange={handleProposalChange} />
+                </label>
+                <br />
+                <br />
+                {options.map((option, i) => (
+                    <div key={i}>
+                        <label>
+                            Option {i+1}:{" "}
+                            <input type="text" value={option} onChange={(e) => handleOptionChange(e, i)} />
+                        </label>
+                        {" "}<button onClick={() => handleRemoveOptions(i)}>Remove</button>
+                        <br/>
+                        <br/>
+                    </div>
+                ))}
+                <button onClick={() => setOptions([...options, ""])}>Add Option</button>
+                <br/>
+                <br/>
+                <SubmitButton
+                    proposal={proposal}
+                    options={options}
+                    setProposalId={setProposalId}
+                    proposalId={proposalId}
+                    setProposal={setProposal}
+                    setOptions={setOptions}
+                />
+            </div>
         </div>
     )
 }
@@ -100,10 +104,32 @@ const ViewProposals = () => {
         }
         const { success, error } = await removeProposalById(id)
         if (success) {
-            handleGetProposals()
             toast.success("Proposal removed")
+            setTimeout(() => {
+                handleGetProposals()
+            }, 1000)
         } else {
             console.log(error)
+        }
+    }
+
+    const handleSetActive = async (id) => {
+        const { success } = await setVoteActive(id)
+        if (success) {
+            toast.success("Vote is now active")
+            handleGetProposals()
+        } else {
+            toast.error("Error")
+        }
+    }
+
+    const handleSetInactive = async (id) => {
+        const { success } = await setVoteInactive(id)
+        if (success) {
+            toast.success("Vote is now inactive")
+            handleGetProposals()
+        } else {
+            toast.error("Error")
         }
     }
 
@@ -138,7 +164,12 @@ const ViewProposals = () => {
                             ))}
                         </ul>
                     </div>
-                    <button onClick={() => handleRemoveProposal(proposal['proposal-id'])}>Remove</button>
+                    <div style={styles.proposalItem}>
+                        <p><strong>Active:</strong> {proposal['active'] === "true" ? "Yes" : "No" }</p>
+                    </div>
+                    <button style={styles.removeButton} onClick={() => handleRemoveProposal(proposal['proposal-id'])}>Delete</button>
+                    {" "}<button style={styles.deactivateButton} onClick={() => handleSetInactive(proposal['proposal-id'])}>Deactivate</button>
+                    {" "}<button style={styles.activateButton} onClick={() => handleSetActive(proposal['proposal-id'])}>Activate</button>
                     <br />
                     <br />
                     <Link to={`/proposal/${proposal['proposal-id']}`}>Go To Proposal</Link>
@@ -155,11 +186,14 @@ const Admin = props => {
     return (
         <div>
             <h1>Admin</h1>
-            <p>{`We can add proposals and stuff here. 
-                Technically anyone can add proposals.
-                We just won't tell them.
+            <p style={{width: "50vw"}}>
+                We can add proposals and stuff here.
+                <br/> 
+                <span style={{fontSize: "0.5em"}}>Technically anyone can add proposals. We just won't tell them.</span>
+                <br/>
                 Security through obscurity, ftw!
-                (jk, we'll fix this later)`}
+                <br/>
+                <span style={{fontSize: "0.75em"}}>(jk, we'll fix this later)</span>
             </p>
             <ProposalInput />
             <ViewProposals />
@@ -168,6 +202,21 @@ const Admin = props => {
 }
 
 const styles = {
+    removeButton: {
+        backgroundColor: 'red',
+        color: 'white',
+        cursor: 'pointer',
+    },
+    activateButton: {
+        backgroundColor: 'green',
+        color: 'white',
+        cursor: 'pointer',
+    },
+    deactivateButton: {
+        backgroundColor: 'yellow',
+        color: 'black',
+        cursor: 'pointer',
+    },
     centered: {
         display: "flex",
         justifyContent: "center",

@@ -71,6 +71,10 @@ const Proposal = props => {
     }, [submitted, allVotes])
 
     const handleSubmit = async () => {
+        if (proposal.active == "false") {
+            toast.error('This vote is not active!')
+            return
+        }
         if (props.votes == 0) {
             toast.error('You have no votes!')
             return

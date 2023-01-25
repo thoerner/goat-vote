@@ -206,3 +206,70 @@ export const getAllVotes = async (id) => {
     const unmarshalled = data.Items.map(item => unmarshal(item))
     return unmarshalled
 }
+
+export const setVoteInactive = async (id) => {
+    const params = {
+        TableName: 'goat-vote',
+        Key: {
+            'proposal-id': { S: id }
+        },
+        UpdateExpression: 'set active = :a',
+        ExpressionAttributeValues: {
+            ':a': { S: 'false' }
+        }
+    }
+
+    const res = ddb.updateItem(params, () => {})
+
+    if (res.error) {
+        return {
+            success: false,
+            error: res.error
+        }
+    } else {
+        return {
+            success: true,
+            data: res.data
+        }
+    }
+}
+
+export const setVoteActive = async (id) => {
+    const params = {
+        TableName: 'goat-vote',
+        Key: {
+            'proposal-id': { S: id }
+        },
+        UpdateExpression: 'set active = :a',
+        ExpressionAttributeValues: {
+            ':a': { S: 'true' }
+        }
+    }
+
+    const res = ddb.updateItem(params, () => {})
+    if (res.error) {
+        return {
+            success: false,
+            error: res.error
+        }
+    } else {
+        return {
+            success: true,
+            data: res.data
+        }
+    }
+}
+
+export const getActiveProposals = async () => {
+    const params = {
+        TableName: 'goat-vote',
+        FilterExpression: 'active = :a',
+        ExpressionAttributeValues: {
+            ':a': { S: 'true' }
+        }
+    }
+
+    const data = await ddb.scan(params).promise()
+    const unmarshalled = data.Items.map(item => unmarshal(item))
+    return unmarshalled
+}
