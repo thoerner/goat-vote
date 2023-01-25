@@ -29,21 +29,22 @@ const App = () => {
       votes
   }
 
-  useEffect(() => {
-    const getVotes = async () => {
-      const goatBalance = balance.goatBalance
-      const stakedGoatBalance = balance.stakedGoatBalance
-      let curve = 1
-      let goatVotes = 0
-      for (let i = 1; i <= goatBalance; i++) {
-          goatVotes += 1/i**curve
-      }
-      let stakedGoatVotes = 0
-      for (let i = 1; i <= stakedGoatBalance; i++) {
-          stakedGoatVotes += (1/i**curve) * 1.1
-      }
-      setVotes((goatVotes + stakedGoatVotes).toFixed(2))
+  const getVotes = async () => {
+    const goatBalance = balance.goatBalance
+    const stakedGoatBalance = balance.stakedGoatBalance
+    let curve = 1
+    let goatVotes = 0
+    for (let i = 1; i <= goatBalance; i++) {
+        goatVotes += 1/i**curve
     }
+    let stakedGoatVotes = 0
+    for (let i = 1; i <= stakedGoatBalance; i++) {
+        stakedGoatVotes += (1/i**curve) * 1.1
+    }
+    setVotes((goatVotes + stakedGoatVotes).toFixed(2))
+  }
+
+  useEffect(() => { 
     getVotes()
   }, [balance])
 
@@ -58,6 +59,7 @@ const App = () => {
       <Toaster />
       <WalletWrapper
         {...walletProps}
+        getVotes={getVotes}
       >
         <div id="header">
           <WalletButton {...walletProps} />

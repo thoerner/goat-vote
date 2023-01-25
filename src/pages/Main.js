@@ -53,13 +53,18 @@ const Main = props => {
         <div>
             <h1>Goat Vote</h1>
             <p>Vote with your Goat Gauds!</p>
-            <p>Goats: {goatBalance}</p>
-            <p>Staked Goats: {stakedGoatBalance}</p>
-            <p>Voting Power:{" "} 
-                {props.votes}
-            </p>
+            {props.walletAddress === "" &&
+                `Connect your wallet to get started!`
+            }
             {props.walletAddress !== "" &&
+                <div>
+                <p>Goats: <span style={{fontSize: '1.5em', fontWeight: 'bold'}}>{goatBalance}</span></p>
+                <p>Staked Goats: <span style={{fontSize: '1.5em', fontWeight: 'bold'}}>{stakedGoatBalance}</span></p>
+                <p>Voting Power:{" "} 
+                    <span style={{fontSize: '1.5em', fontWeight: 'bold'}}>{props.votes}</span>
+                </p>
                 <ViewProposals />
+                </div>
             }
         </div>
     )

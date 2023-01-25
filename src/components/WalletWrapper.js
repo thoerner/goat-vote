@@ -14,7 +14,7 @@ import {
  * @notice This component will wrap the entire app and will provide the app with the user's wallet address and status.
  */ 
 
-export const WalletWrapper = ({ setWallet, setStatus, setChainId, setBalance, children }) => {
+export const WalletWrapper = ({ getVotes, setWallet, setStatus, setChainId, setBalance, children }) => {
 
   /** 
    * @dev This function will run when the component is first loaded.
@@ -35,9 +35,11 @@ export const WalletWrapper = ({ setWallet, setStatus, setChainId, setBalance, ch
             setWallet("")
             setStatus(STATUS_NOT_READY)
           }
+          getVotes()
         })
         window.ethereum.on("chainChanged", (_chainId) => {
           setChainId(_chainId)
+          getVotes()
         })
       } else {
         setStatus(STATUS_NO_MASK)
