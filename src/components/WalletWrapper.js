@@ -16,6 +16,8 @@ import {
 
 export const WalletWrapper = props => {
 
+  
+
   /** 
    * @dev This function will run when the component is first loaded.
    * It will check if the user has a wallet connected and will set the wallet address and status in the React state.
