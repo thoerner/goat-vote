@@ -28,7 +28,7 @@ export const WalletWrapper = ({ getVotes, setWallet, setStatus, setChainId, setB
       if (window.ethereum) {
         window.ethereum.on("accountsChanged", (accounts) => {
           if (accounts.length > 0) {
-            setWallet(accounts[0])
+            setWallet(accounts[0].toLowerCase())
             setStatus(STATUS_READY)
             getData()
           } else {
@@ -47,7 +47,7 @@ export const WalletWrapper = ({ getVotes, setWallet, setStatus, setChainId, setB
     }
     const getData = async () => {
       const { address, status, chainId } = await getCurrentWalletConnected()
-      setWallet(address)
+      setWallet(address.toLowerCase())
       setStatus(status)
       setChainId(chainId)
       if (address) {
