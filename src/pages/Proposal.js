@@ -103,9 +103,13 @@ const Proposal = props => {
 
     useEffect(() => {
         const getEnsNames = async () => {
+            let sortedVotes = [...allVotes]
+
+            // sort by number of votes
+            sortedVotes.sort((a, b) => b.votes - a.votes)
             const names = []
-            for (let i = 0; i < allVotes.length; i++) {
-                const name = await addressToEns(allVotes[i].address)
+            for (let i = 0; i < sortedVotes.length; i++) {
+                const name = await addressToEns(sortedVotes[i].address)
                 names.push(name)
             }
             setEnsNames(names)
