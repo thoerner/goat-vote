@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { getProposalById, vote, getVoteByAddress, getAllVotes } from '../utils/ddb'
-import { shortenAddress } from '../utils/tools'
+import { shortenAddress, getEnsName } from '../utils/tools'
 import { isMobile } from 'react-device-detect'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,6 +11,15 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import toast from 'react-hot-toast'
+
+const addressToEns = async (address) => {
+    const ensName = await getEnsName(address)
+    if (!ensName) {
+        return shortenAddress(address)
+    } else {
+        return ensName
+    }
+}
 
 const SelectableOptions = ({ options, setChosenOption, chosenVote }) => {    
     const handleOptionChange = (e, i) => {
@@ -46,6 +55,8 @@ const Proposal = props => {
     const [submitted, setSubmitted] = useState(false)
     const [proposalId, setProposalId] = useState("")
     const [loading, setLoading] = useState(true)
+    const [ensNames, setEnsNames] = useState([])
+    const [ensLoading, setEnsLoading] = useState(true)
 
     useEffect(() => {
         const getData = async () => {
@@ -89,6 +100,21 @@ const Proposal = props => {
             getData()
         }
     }, [submitted, allVotes, proposalId])
+
+    useEffect(() => {
+        const getEnsNames = async () => {
+            const names = []
+            for (let i = 0; i < allVotes.length; i++) {
+                const name = await addressToEns(allVotes[i].address)
+                names.push(name)
+            }
+            setEnsNames(names)
+            setEnsLoading(false)
+        }
+        if (allVotes.length > 0) {
+            getEnsNames()
+        }
+    }, [allVotes])
 
     const handleSubmit = async () => {
         if (proposal.active === "false") {
@@ -195,9 +221,9 @@ const Proposal = props => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {sortedVotes.map((vote, i) => (
+                            {ensLoading ? <TableRow><TableCell style={styles.loading}>loading votes...</TableCell></TableRow>: sortedVotes.map((vote, i) => (
                                 <TableRow key={i}>
-                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{isMobile ? shortenAddress(vote.address) : vote.address}</a></TableCell>
+                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{ensNames[i]}</a></TableCell>
                                     <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{vote.option}</TableCell>
                                     <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{vote.votes}</TableCell>
                                 </TableRow>
@@ -237,6 +263,16 @@ const Proposal = props => {
 }
 
 const styles = {
+    loading: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        fontSize: '20px',
+        fontWeight: 'bold',
+        padding: '10px',
+        margin: '10px',
+    },
     proposal: {
         display: 'flex',
         justifyContent: 'center',

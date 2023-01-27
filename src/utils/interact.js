@@ -1,8 +1,6 @@
 import { METAMASK_REDIRECT_URL, STATUS_READY, STATUS_NOT_READY } from "./constants";
 
-
 const alchemyKey = process.env.REACT_APP_ALCHEMY_API_KEY;
-
 const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
 const web3 = createAlchemyWeb3(alchemyKey);
 
