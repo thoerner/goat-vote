@@ -15,7 +15,7 @@ import toast from 'react-hot-toast'
 const addressToEns = async (address) => {
     const ensName = await getEnsName(address)
     if (!ensName) {
-        return shortenAddress(address)
+        return null
     } else {
         return ensName
     }
@@ -195,6 +195,16 @@ const Proposal = props => {
         )
     }
 
+    const LoadingPlaceholder = () => {
+        return (
+            <div className="main-item">
+                <div className="static-background">
+                    <div className="animated-background"></div>
+                </div>
+            </div>
+        )
+    }
+
     // return a table of votes, by address, using MUI
     const TableOfVotes = () => {
 
@@ -216,14 +226,16 @@ const Proposal = props => {
                         <TableHead>
                             <TableRow>
                                 <TableCell style={styles.th}>Address</TableCell>
+                                <TableCell style={styles.th}>ENS</TableCell>
                                 <TableCell style={styles.th}>Option</TableCell>
                                 <TableCell style={styles.th}>Votes</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {ensLoading ? <TableRow><TableCell style={styles.loading}>loading votes...</TableCell></TableRow>: sortedVotes.map((vote, i) => (
+                            {sortedVotes.map((vote, i) => (
                                 <TableRow key={i}>
-                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{ensNames[i]}</a></TableCell>
+                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{shortenAddress(vote.address)}</a></TableCell>
+                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{ensLoading ? <LoadingPlaceholder/> : ensNames[i]}</TableCell>
                                     <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{vote.option}</TableCell>
                                     <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{vote.votes}</TableCell>
                                 </TableRow>
