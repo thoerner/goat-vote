@@ -2,6 +2,14 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { getProposalById, vote, getVoteByAddress, getAllVotes } from '../utils/ddb'
 import { getEnsName } from '../utils/interact'
+import { isMobile } from 'react-device-detect'
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import toast from 'react-hot-toast'
 
 const SelectableOptions = ({ options, setChosenOption, chosenVote }) => {    
@@ -130,31 +138,61 @@ const Proposal = props => {
 
         const sorted = Object.keys(tally).sort((a, b) => tally[b] - tally[a])
 
+        // return tallies as a table using MUI
+
         return (
             <div style={styles.centered}>
-                <table style={styles.table}>
-                    <thead>
-                        <tr>
-                            <th style={styles.th}>Option</th>
-                            <th style={styles.th}>Votes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Object.keys(tally).map((option, i) => (
-                            <tr key={i}>
-                                <td style={styles.td}>{option}</td>
-                                <td style={styles.td}>{tallyText[option]}{sorted[0] === option ? ' ✅' : null }</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <TableContainer sx={{ margin: "10px" }} component={Paper}>
+                    <Table aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell style={styles.th}>Option</TableCell>
+                                <TableCell style={styles.th}>Votes</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {Object.keys(tally).map((option, i) => (
+                                <TableRow
+                                    key={i}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell style={styles.td} component="th" scope="row">
+                                        {option}
+                                    </TableCell>
+                                    <TableCell style={styles.td}>{tallyText[option]}{sorted[0] === option ? ' ✅' : null }</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </div>
         )
+
+        // return (
+        //     <div style={styles.centered}>
+        //         <table style={styles.table}>
+        //             <thead>
+        //                 <tr>
+        //                     <th style={styles.th}>Option</th>
+        //                     <th style={styles.th}>Votes</th>
+        //                 </tr>
+        //             </thead>
+        //             <tbody>
+        //                 {Object.keys(tally).map((option, i) => (
+        //                     <tr key={i}>
+        //                         <td style={styles.td}>{option}</td>
+        //                         <td style={styles.td}>{tallyText[option]}{sorted[0] === option ? ' ✅' : null }</td>
+        //                     </tr>
+        //                 ))}
+        //             </tbody>
+        //         </table>
+        //     </div>
+        // )
     }
 
-    // return a full table of votes, by address
+    // return a table of votes, by address, using MUI
     const TableOfVotes = () => {
-        
+
         if (allVotes.length === 0) {
             return <div></div>
         }
@@ -164,35 +202,73 @@ const Proposal = props => {
         // sort by number of votes
         sortedVotes.sort((a, b) => b.votes - a.votes)
 
-
         return (
             <div style={styles.centered}>
-                <table style={styles.table}>
-                    <thead>
-                        <tr>
-                            <th style={styles.th}>Address</th>
-                            <th style={styles.th}>Option</th>
-                            <th style={styles.th}>Votes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sortedVotes.map((vote, i) => (
-                            <tr key={i}>
-                                <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{vote.address}</a></td>
-                                <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}>{vote.option}</td>
-                                <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}>{vote.votes}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <TableContainer sx={{maxWidth: "90vw", marginBottom: "100px"}} component={Paper}>
+                    <Table aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell style={styles.th}>Address</TableCell>
+                                <TableCell style={styles.th}>Option</TableCell>
+                                <TableCell style={styles.th}>Votes</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {sortedVotes.map((vote, i) => (
+                                <TableRow key={i}>
+                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : styles.td}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{vote.address}</a></TableCell>
+                                    <TableCell style={vote.address === props.walletAddress ? styles.tdxo : styles.tdo }>{vote.option}</TableCell>
+                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : styles.td}>{vote.votes}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </div>
         )
-
     }
+
+    // // return a full table of votes, by address
+    // const TableOfVotes = () => {
+        
+    //     if (allVotes.length === 0) {
+    //         return <div></div>
+    //     }
+
+    //     let sortedVotes = [...allVotes]
+
+    //     // sort by number of votes
+    //     sortedVotes.sort((a, b) => b.votes - a.votes)
+
+
+    //     return (
+    //         <div style={styles.centered}>
+    //             <table style={styles.table}>
+    //                 <thead>
+    //                     <tr>
+    //                         <th style={styles.th}>Address</th>
+    //                         <th style={styles.th}>Option</th>
+    //                         <th style={styles.th}>Votes</th>
+    //                     </tr>
+    //                 </thead>
+    //                 <tbody>
+    //                     {sortedVotes.map((vote, i) => (
+    //                         <tr key={i}>
+    //                             <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{vote.address}</a></td>
+    //                             <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}>{vote.option}</td>
+    //                             <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}>{vote.votes}</td>
+    //                         </tr>
+    //                     ))}
+    //                 </tbody>
+    //             </table>
+    //         </div>
+    //     )
+
+    // }
 
 
     return (
-        <div>
+        <div style={styles.proposal}>
             {loading ? <div>Loading...</div> : <div>
             <h1>{proposal.proposal}</h1>
             <SelectableOptions 
@@ -206,18 +282,27 @@ const Proposal = props => {
             <br />
             <br />
             <h2><u>Results</u></h2>
-            <VoteTally />
-            <TableOfVotes />
+            <div style={styles.centered}>
+                <VoteTally />
+                <TableOfVotes />
+            </div>
             </div>}
         </div>
     )
 }
 
 const styles = {
+    proposal: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+    },
     centered: {
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexDirection: 'column',
     },
     table: {
         borderCollapse: 'collapse',
@@ -225,23 +310,36 @@ const styles = {
         marginBottom: '100px'
     },
     th: {
-        border: '1px solid black',
         padding: '10px',
-        backgroundColor: 'lightgrey',
-        opacity: '0.6',
-        color: 'black'
+        border: '1px solid black',
+        backgroundColor: '#111',
+        color: 'white',
     },
     td: {
         border: '1px solid black',
         padding: '10px',
         backgroundColor: 'white',
         color: 'black',
-        opacity: '0.8'
+        opacity: '0.8',
+    },
+    tdo: {
+        border: '1px solid black',
+        padding: '10px',
+        backgroundColor: 'white',
+        color: 'black',
+        opacity: '0.8',
+        minWidth: '75px'
     },
     tdx: {
         border: '1px solid black',
         padding: '10px',
         backgroundColor: 'green'
+    },
+    tdxo: {
+        border: '1px solid black',
+        padding: '10px',
+        backgroundColor: 'green',
+        minWidth: '75px'
     }
 }
 
