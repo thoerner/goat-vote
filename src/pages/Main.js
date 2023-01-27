@@ -36,7 +36,8 @@ const ViewProposals = () => {
                             ))}
                         </ul>
                     </div>
-                    <Link to={`/proposal/${proposal['proposal-id']}`}>Go To Proposal</Link>
+                    <Link to={`/proposal/${proposal['proposal-id']}`}>Click to Vote</Link><br/>
+                    ☝🏿☝🏾☝🏻
                     <br />
                     <br />
                 </div>
@@ -44,6 +45,8 @@ const ViewProposals = () => {
         </div>
     )
 }
+
+// the dark skin pointing up emoji looks like this:
 
 
 const Main = props => {
@@ -58,8 +61,8 @@ const Main = props => {
             }
             {props.walletAddress !== "" &&
                 <div>
-                <p>Goats: <span style={{fontSize: '1.5em', fontWeight: 'bold'}}>{goatBalance}</span></p>
-                <p>Staked Goats: <span style={{fontSize: '1.5em', fontWeight: 'bold'}}>{stakedGoatBalance}</span></p>
+                <p>Goat Gauds (unstaked): <span style={{fontSize: '1.5em', fontWeight: 'bold'}}>{goatBalance}</span></p>
+                <p>Goat Gauds (staked): <span style={{fontSize: '1.5em', fontWeight: 'bold'}}>{stakedGoatBalance}</span></p>
                 <p>Voting Power:{" "} 
                     <span style={{fontSize: '1.5em', fontWeight: 'bold'}}>{props.votes}</span>
                 </p>

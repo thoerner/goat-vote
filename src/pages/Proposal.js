@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { getProposalById, vote, getVoteByAddress, getAllVotes } from '../utils/ddb'
-import { getEnsName } from '../utils/interact'
+import { shortenAddress } from '../utils/tools'
 import { isMobile } from 'react-device-detect'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -156,10 +156,10 @@ const Proposal = props => {
                                     key={i}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
-                                    <TableCell style={styles.td} component="th" scope="row">
+                                    <TableCell style={i % 2 ? styles.td : styles.tda} component="th" scope="row">
                                         {option}
                                     </TableCell>
-                                    <TableCell style={styles.td}>{tallyText[option]}{sorted[0] === option ? ' ✅' : null }</TableCell>
+                                    <TableCell style={i % 2 ? styles.td : styles.tda}>{tallyText[option]}{sorted[0] === option ? ' ✅' : null }</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -167,27 +167,6 @@ const Proposal = props => {
                 </TableContainer>
             </div>
         )
-
-        // return (
-        //     <div style={styles.centered}>
-        //         <table style={styles.table}>
-        //             <thead>
-        //                 <tr>
-        //                     <th style={styles.th}>Option</th>
-        //                     <th style={styles.th}>Votes</th>
-        //                 </tr>
-        //             </thead>
-        //             <tbody>
-        //                 {Object.keys(tally).map((option, i) => (
-        //                     <tr key={i}>
-        //                         <td style={styles.td}>{option}</td>
-        //                         <td style={styles.td}>{tallyText[option]}{sorted[0] === option ? ' ✅' : null }</td>
-        //                     </tr>
-        //                 ))}
-        //             </tbody>
-        //         </table>
-        //     </div>
-        // )
     }
 
     // return a table of votes, by address, using MUI
@@ -202,6 +181,8 @@ const Proposal = props => {
         // sort by number of votes
         sortedVotes.sort((a, b) => b.votes - a.votes)
 
+        // how can i make every other row a different color?
+        
         return (
             <div style={styles.centered}>
                 <TableContainer sx={{maxWidth: "90vw", marginBottom: "100px"}} component={Paper}>
@@ -216,9 +197,9 @@ const Proposal = props => {
                         <TableBody>
                             {sortedVotes.map((vote, i) => (
                                 <TableRow key={i}>
-                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : styles.td}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{vote.address}</a></TableCell>
-                                    <TableCell style={vote.address === props.walletAddress ? styles.tdxo : styles.tdo }>{vote.option}</TableCell>
-                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : styles.td}>{vote.votes}</TableCell>
+                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{isMobile ? shortenAddress(vote.address) : vote.address}</a></TableCell>
+                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{vote.option}</TableCell>
+                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{vote.votes}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -227,42 +208,6 @@ const Proposal = props => {
             </div>
         )
     }
-
-    // // return a full table of votes, by address
-    // const TableOfVotes = () => {
-        
-    //     if (allVotes.length === 0) {
-    //         return <div></div>
-    //     }
-
-    //     let sortedVotes = [...allVotes]
-
-    //     // sort by number of votes
-    //     sortedVotes.sort((a, b) => b.votes - a.votes)
-
-
-    //     return (
-    //         <div style={styles.centered}>
-    //             <table style={styles.table}>
-    //                 <thead>
-    //                     <tr>
-    //                         <th style={styles.th}>Address</th>
-    //                         <th style={styles.th}>Option</th>
-    //                         <th style={styles.th}>Votes</th>
-    //                     </tr>
-    //                 </thead>
-    //                 <tbody>
-    //                     {sortedVotes.map((vote, i) => (
-    //                         <tr key={i}>
-    //                             <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{vote.address}</a></td>
-    //                             <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}>{vote.option}</td>
-    //                             <td style={vote.address === props.walletAddress ? styles.tdx : styles.td}>{vote.votes}</td>
-    //                         </tr>
-    //                     ))}
-    //                 </tbody>
-    //             </table>
-    //         </div>
-    //     )
 
     // }
 
@@ -319,6 +264,13 @@ const styles = {
         border: '1px solid black',
         padding: '10px',
         backgroundColor: 'white',
+        color: 'black',
+        opacity: '0.8',
+    },
+    tda: {
+        border: '1px solid black',
+        padding: '10px',
+        backgroundColor: 'lightgray',
         color: 'black',
         opacity: '0.8',
     },

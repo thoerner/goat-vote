@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import logo from './images/gg.png'
 import Main from './pages/Main'
 import Admin from './pages/Admin'
@@ -29,7 +29,7 @@ const App = () => {
       votes
   }
 
-  const getVotes = async () => {
+  const getVotes = useCallback(async () => {
     const goatBalance = balance.goatBalance
     const stakedGoatBalance = balance.stakedGoatBalance
     let curve = 1
@@ -42,7 +42,7 @@ const App = () => {
         stakedGoatVotes += (1/i**curve) * 1.1
     }
     setVotes((goatVotes + stakedGoatVotes).toFixed(2))
-  }
+  }, [balance.goatBalance, balance.stakedGoatBalance])
 
   useEffect(() => { 
     getVotes()

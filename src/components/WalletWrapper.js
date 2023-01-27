@@ -56,7 +56,7 @@ export const WalletWrapper = ({ getVotes, setWallet, setStatus, setChainId, setB
       addWalletListener()
     }
     getData()
-  }, [setBalance, setChainId, setWallet, setStatus])
+  }, [setBalance, setChainId, setWallet, setStatus, getVotes])
 
   return (
     <div>
