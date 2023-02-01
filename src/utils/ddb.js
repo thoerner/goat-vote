@@ -274,3 +274,17 @@ export const getActiveProposals = async () => {
     const unmarshalled = data.Items.map(item => unmarshal(item))
     return unmarshalled
 }
+
+export const getInactiveProposals = async () => {
+    const params = {
+        TableName: 'goat-vote',
+        FilterExpression: 'active = :a',
+        ExpressionAttributeValues: {
+            ':a': { S: 'false' }
+        }
+    }
+
+    const data = await ddb.scan(params).promise()
+    const unmarshalled = data.Items.map(item => unmarshal(item))
+    return unmarshalled
+}

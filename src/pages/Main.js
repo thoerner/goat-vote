@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getAllProposals } from '../utils/ddb'
+import { getAllProposals, getActiveProposals, getInactiveProposals } from '../utils/ddb'
 
-const ViewProposals = () => {
+const ViewProposals = props => {
     const [proposals, setProposals] = useState([])
     const [loading, setLoading] = useState(false)
 
     const handleGetProposals = async () => {
         setLoading(true)
-        const data = await getAllProposals()
+        const data = await props.getProposals()
         setProposals(data)
         setLoading(false)
     }
@@ -36,7 +36,7 @@ const ViewProposals = () => {
                             ))}
                         </ul>
                     </div>
-                    <Link to={`/proposal/${proposal['proposal-id']}`}>Click to Vote</Link><br/>
+                    <Link to={`/proposal/${proposal['proposal-id']}`}>{props.type === "active" ? 'Click to Vote' : 'View Results'}</Link><br/>
                     ☝🏿☝🏾☝🏻
                     <br />
                     <br />
@@ -46,15 +46,12 @@ const ViewProposals = () => {
     )
 }
 
-// the dark skin pointing up emoji looks like this:
-
-
 const Main = props => {
     const goatBalance = props.balance.goatBalance
     const stakedGoatBalance = props.balance.stakedGoatBalance
     return (
         <div>
-            <h1>Goat Vote</h1>
+            <h1>Goat Voat</h1>
             <p>Vote with your Goat Gauds!</p>
             {props.walletAddress === "" &&
                 `Connect your wallet to get started!`
@@ -66,7 +63,16 @@ const Main = props => {
                 <p>Voting Power:{" "} 
                     <span style={{fontSize: '1.5em', fontWeight: 'bold'}}>{props.votes}</span>
                 </p>
-                <ViewProposals />
+                <h2>Active Proposals:</h2>
+                <ViewProposals 
+                    getProposals={getActiveProposals}
+                    type="active"
+                />
+                <h2>Completed Proposals:</h2>
+                <ViewProposals
+                    getProposals={getInactiveProposals}
+                    type="inactive"
+                />
                 </div>
             }
         </div>
