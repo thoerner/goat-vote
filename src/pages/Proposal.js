@@ -163,7 +163,7 @@ const Proposal = props => {
 
         // calculate percentages
         Object.keys(tally).forEach(option => {
-            tallyText[option] = `${tally[option]} (${(tally[option] / totalVotes * 100).toFixed(2)}%)`
+            tallyText[option] = `${tally[option].toFixed(2)} (${(tally[option] / totalVotes * 100).toFixed(2)}%)`
         })
 
         const sorted = Object.keys(tally).sort((a, b) => tally[b] - tally[a])
@@ -241,7 +241,7 @@ const Proposal = props => {
                                     <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}><a href={`https://opensea.io/${vote.address}`} target="_blank" rel="noreferrer">{shortenAddress(vote.address)}</a></TableCell>
                                     <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{ensLoading ? <LoadingPlaceholder/> : ensNames[i]}</TableCell>
                                     <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{vote.option}</TableCell>
-                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{vote.votes}</TableCell>
+                                    <TableCell style={vote.address === props.walletAddress ? styles.tdx : i % 2 ? styles.td : styles.tda}>{Number(vote.votes).toFixed(2)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
