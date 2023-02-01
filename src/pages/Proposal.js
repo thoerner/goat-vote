@@ -264,7 +264,7 @@ const Proposal = props => {
                 chosenVote={chosenVote}
             />
             <button onClick={handleSubmit}>
-                {proposal.active === "true" ? "Vote (Voat?)" : "🚫 Voting Inactive"}
+                {proposal.active === "true" ? "Vote" : "🚫 Voting Inactive"}
             </button>
             <br />
             <br />
